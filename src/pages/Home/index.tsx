@@ -146,6 +146,8 @@ const Home: React.FC = () => {
     setLoading(true)
     try {
       const result = await addAiMasterData1(params);
+      console.log('111',result);
+      
       if (result.code === 0 && result.data && result.data.aiResult.length !== 0) {
         setSessionMessageList([...sessionMessageList, result.data]);
         setTestData(result.data);

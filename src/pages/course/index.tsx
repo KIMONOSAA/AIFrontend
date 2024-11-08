@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Layout, List, Tag } from 'antd';
 import { EyeOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { courseOpenController, courseLearnRecordController } from '@/services/course/index';
+import { mediaFilesController } from '@/services/media/index';
 import './style.scss';
 
 const { Content, Sider } = Layout;
@@ -40,7 +41,7 @@ const CourseDetail: React.FC = () => {
   // };
   const [videoDuration, setVideoDuration] = useState<number | null>(null); // 保存视频时长
 
-  const handleVideoChange = (mediaId: string, teachPlan: { id: number; pname: string; description: string; label: string }) => {
+  const handleVideoChange = async (mediaId: string, teachPlan: { id: number; pname: string; description: string; label: string }) => {
     // 更新当前教学计划信息
     setCurrentTeachPlan(teachPlan);
     // videoRef.current.pause(); // 暂停当前视频
@@ -50,9 +51,15 @@ const CourseDetail: React.FC = () => {
     // }http://192.168.101.132:9090/browser/video/3%2F4%2F342602e471862fd9a4301d6239372e27%2F342602e471862fd9a4301d6239372e27.mp4
 
     // const newUrl = "http://192.168.101.132:9090/browser/3%2F4%2F342602e471862fd9a4301d6239372e27%2F342602e471862fd9a4301d6239372e27.mp4"
-    const newUrl = `http://localhost:63090/media/show?fileMd5=${mediaId}`;
+    const response =await mediaFilesController.getPreviewUrl({filemd5:mediaId});
+    console.log('response',response.data);
+    
+    console.log('mediaId',mediaId);
+    
+    // const newUrl = `http://localhost:63090/media/show?fileMd5=${mediaId}`;
+    // const newUrl = `http://192.168.101.132:9000/video/5/c/5cb1bb93bad3f46156769f02c112bc6b/5cb1bb93bad3f46156769f02c112bc6b.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=adminminio%2F20241108%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241108T075342Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=78398a1506551d0a511d40dc0e22296191293fe35e69b60ff980d21fa08c00b2`;
     // const newUrl = "https://media.w3.org/2010/05/sintel/trailer_hd.mp4";
-    setVideoUrl(newUrl);
+    setVideoUrl(response.data);
   };
 
   const handleCourseClick = (teacherId: string, subjects: string, courseId: string) => {
@@ -233,7 +240,7 @@ const CourseDetail: React.FC = () => {
 
   //时间线(e.buttons & 1)右键点击就是1所以e.buttons是看看你有没有点击有点击才会更新没点击而是移动的话就只会灰色的进度条跟你移动
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log('handleMouseDown', e);
+   
 
     if (timelinecontainer.current && videoRef.current) {
       const rect = timelinecontainer.current.getBoundingClientRect()
@@ -352,7 +359,7 @@ const CourseDetail: React.FC = () => {
                 <div className='video-controls-container'>
                   <div className="timeline-container" onMouseUp={handleMouseUp} ref={timelinecontainer} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} >
                     <div className="timeline" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseMove={handleMouseMove}>
-                      <img className="preview-img" />
+                      {/* <img className="preview-img" /> */}
                       <div className="thumb-indicator"></div>
                     </div>
                   </div>
@@ -409,14 +416,14 @@ const CourseDetail: React.FC = () => {
                         <path fill="currentColor" d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zm-10-7h9v6h-9z" />
                       </svg>
                     </button>
-                    <button className="theater-btn" onClick={toggleTheaterMode}>
+                    {/* <button className="theater-btn" onClick={toggleTheaterMode}>
                       <svg className="tall" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M19 6H5c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 10H5V8h14v8z" />
                       </svg>
                       <svg className="wide" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M19 7H5c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm0 8H5V9h14v6z" />
                       </svg>
-                    </button>
+                    </button> */}
                     <button className="full-screen-btn" onClick={toggleFullScreenMode}>
                       <svg className="open" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />

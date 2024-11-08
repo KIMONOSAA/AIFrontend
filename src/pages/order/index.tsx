@@ -1,39 +1,16 @@
+
 import React, { useEffect, useState } from 'react';
 import { Button, Layout, message, Modal } from 'antd';
 import { orderController } from '@/services/order/index';
 import { userMemberController } from '@/services/auth/index';
-import './yemian.scss';
 import { Flex, QRCode } from 'antd';
 import { AlipayOutlined } from '@ant-design/icons';
-
+import './yemian.scss'
 const Master: React.FC = () => {
     const [members, setMembers] = useState([]);
     const [qrValue, setQrValue] = useState('');
     const [payNo, setPayNo] = useState('');
     const [selectedPrice, setSelectedPrice] = useState('¥199');
-
-    // useEffect(() => {
-    //     // 检查 sessionStorage 中是否已经存在 'hasRefreshed' 标识
-    //     if (!sessionStorage.getItem('hasRefreshed')) {
-    //         sessionStorage.setItem('hasRefreshed', 'true'); // 设置标识
-    //         window.location.reload(); // 刷新页面
-    //     } else {
-    //         // 如果已经刷新过，则不再执行刷新
-    //         setHasRefreshed(true);
-    //     }
-
-    //     // 设置定时器，每30秒刷新一次页面（如果页面没有刷新过）
-    //     const intervalId = setInterval(() => {
-    //         if (!hasRefreshed) {
-    //             sessionStorage.setItem('hasRefreshed', 'true'); // 设置标识
-    //             window.location.reload(); // 刷新页面
-    //         }
-    //     }, 30000); // 每30秒检查一次
-
-    //     // 清理定时器，避免组件卸载时仍然存在定时器
-    //     return () => clearInterval(intervalId);
-    // }, [hasRefreshed]); // 依赖 hasRefreshed
-
     useEffect(() => {
         const fetchMembers = async () => {
             try {
@@ -58,7 +35,6 @@ const Master: React.FC = () => {
 
         fetchMembers();
     }, []);
-
 
     const handleClick = async (id: any, price: any, type: any) => {
         try {

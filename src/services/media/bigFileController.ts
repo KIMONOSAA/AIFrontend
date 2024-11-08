@@ -25,6 +25,7 @@ export async function download(
 ) {
   return request<any>(`${baseUrl}/show`, {
     method: 'POST',
+    headers: getHeaders(),
     params: {
       ...params,
     },
@@ -40,6 +41,7 @@ export async function checkchunk(
 ) {
   return request<API.BaseResponseBoolean>(`${baseUrl}/upload/checkchunk`, {
     method: 'POST',
+    headers: getHeaders(),
     params: {
       ...params,
     },
@@ -55,6 +57,7 @@ export async function checkfile(
 ) {
   return request<API.BaseResponseBoolean>(`${baseUrl}/upload/checkfile`, {
     method: 'POST',
+    headers: getHeaders(),
     params: {
       ...params,
     },
@@ -70,6 +73,7 @@ export async function mergechunks(
 ) {
   return request<API.BaseResponse>(`${baseUrl}/upload/mergechunks`, {
     method: 'POST',
+    headers: getHeaders(),
     params: {
       ...params,
     },

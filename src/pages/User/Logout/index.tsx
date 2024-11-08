@@ -1,6 +1,6 @@
 import { Footer } from '@/components';
 
-import { checkVerificationEmail, getLoginUser, getPublishEvent, register } from '@/services/auth/userController';
+import { checkVerificationEmail, getLoginUser, getPublishEvent, register, addPoint } from '@/services/auth/userController';
 import {
   AlipayCircleOutlined,
   CheckCircleOutlined,
@@ -15,6 +15,7 @@ import {
   LoginForm,
   ProFormCaptcha,
   ProFormCheckbox,
+  ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components';
 import { Helmet, history, useModel } from '@umijs/max';
@@ -113,8 +114,6 @@ const Login: React.FC = () => {
   const [inputChange, setInputChange] = useState<string>()
   const { initialState, setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
-
-
   // const [fileList, setFileList] = useState([]);
   // const [isUserEventEmail, setIsUserEventEmail] = useState(false);
   // const [fileList, setFileList] = useState([]);
@@ -124,6 +123,8 @@ const Login: React.FC = () => {
   const [userAccount, setUserAccount] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [qualification, setQualification] = useState('');
+  const [grade, setQrade] = useState('');
   // const [fileList, setFileList] = useState([]);
   // const [formdata, setFormdata] = useState(new FormData());
   // const history = history(); // 获取历史对象
@@ -139,36 +140,51 @@ const Login: React.FC = () => {
   };
 
   const handleGetCaptcha = async () => {
-    const formdata = new FormData();
-    // 更新 formdata
-    formdata.append('email', email);
-    formdata.append('userAccount', userAccount);
-    formdata.append('userPassword', userPassword);
-    formdata.append('confirmPassword', confirmPassword);
-    if (fileList[0]?.originFileObj) {
-      formdata.append('file', fileList[0].originFileObj);
-    }
-    // console.log('FormData:', [...formdata]);
-
-    // 调用 register 接口
-    const registerResult = await register(formdata);
-    setUserId(null);
-    if (registerResult.code === 0) {
-      const newUserId = registerResult.data;
-      setUserId(newUserId); // 更新状态
-
-      setIsUserEventEmail(true);
-      await getPublishEvent({ id: newUserId, email: email }); // 使用 newUserId
-      // console.log("用户 ID:", Number(newUserId)); // 使用 newUserId
-      // console.log("用户 email:", email);
-      //   id?: number;
-      // email?: string;
+    try {
+      const resp = await getPublishEvent({ email: email });
+      setUserId(resp.data);
       message.success("获取成功");
-
-    } else {
-      message.error(registerResult.message || "注册失败");
+    } catch (error) {
+      message.error("获取失败");
     }
   };
+  // const resp =  await getPublishEvent({ 
+  //     // id: newUserId, 
+  //     email: email }); // 使用 newUserId
+  //   // console.log("用户 ID:", Number(newUserId)); // 使用 newUserId
+  //   // console.log("用户 email:", email);
+  //   //   id?: number;
+  //   // email?: string;
+
+  //   setUserId(resp.data);
+  //   message.success("获取成功");
+  // const formdata = new FormData();
+  // // 更新 formdata
+  // formdata.append('email', email);
+  // formdata.append('userAccount', userAccount);
+  // formdata.append('userPassword', userPassword);
+  // formdata.append('confirmPassword', confirmPassword);
+  // formdata.append('qualification', qualification);
+  // formdata.append('grade', grade);
+  // if (fileList[0]?.originFileObj) {
+  //   formdata.append('file', fileList[0].originFileObj);
+  // }
+  // // console.log('FormData:', [...formdata]);
+
+  // // 调用 register 接口
+  // const registerResult = await register(formdata);
+  // setUserId(null);
+  // if (registerResult.code === 0) {
+  //   const newUserId = registerResult.data;
+  //   setUserId(newUserId); // 更新状态
+
+  //   setIsUserEventEmail(true);
+
+
+  // } else {
+  //   message.error(registerResult.message || "注册失败");
+  // }
+
 
   // 提交注册
   const handleSubmit = async (values) => {
@@ -180,18 +196,41 @@ const Login: React.FC = () => {
       message.error("请先输入验证码并获取用户 ID");
       return;
     }
-    // console.log("tij用户 ID:", userId);
-    // console.log("tij用户 email:", email);
-    // console.log("tij用户 captchaCode:", captchaCode);
-
-
     const verificationResult = await checkVerificationEmail({
       code: captchaCode,
       userId: userId,
       email: email,
     });
 
-    if (verificationResult.code === 0) {
+    if (verificationResult.data === 'true') {
+      //注册
+      const formdata = new FormData();
+      // 更新 formdata
+      formdata.append('email', email);
+      formdata.append('userAccount', userAccount);
+      formdata.append('userPassword', userPassword);
+      formdata.append('confirmPassword', confirmPassword);
+      formdata.append('qualification', qualification);
+      formdata.append('grade', grade);
+      if (fileList[0]?.originFileObj) {
+        formdata.append('file', fileList[0].originFileObj);
+      }
+      // console.log('FormData:', [...formdata]);
+
+      // 调用 register 接口
+      const registerResult = await register(formdata);
+      // setUserId(null);
+      // if (registerResult.code === 0) {
+      //   const newUserId = registerResult.data;
+      //   setIsUserEventEmail(true);
+      // } else {
+      //   message.error(registerResult.message || "注册失败");
+      // }
+      const id = registerResult.data;
+      // addPoint({ userId: id })
+      if (id !== undefined) {
+        addPoint({ userId: id });
+    }
       message.success("注册成功");
       history.push('/user/login'); // 注册成功后跳转到登录页面
     } else {
@@ -232,13 +271,14 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          submitter={{ searchConfig: { submitText: '注册' }
-          // ,
-          // submitButtonProps: {
-          //   disabled: !isAgreementChecked, // 只有勾选后才能提交
-          // },
-        }}
-          
+          submitter={{
+            searchConfig: { submitText: '注册' }
+            // ,
+            // submitButtonProps: {
+            //   disabled: !isAgreementChecked, // 只有勾选后才能提交
+            // },
+          }}
+
           logo={<img alt="logo" src="/logo2.svg" />}
           title="AI GPT"
           subTitle="打造专属于你的 AI GPT"
@@ -268,6 +308,26 @@ const Login: React.FC = () => {
             rules={[{ required: true, message: '邮箱是必填项！' }]}
             onChange={(e) => setEmail(e.target.value)} // 存储邮箱
           />
+          <ProFormText
+            name="grade"
+            fieldProps={{ size: 'large', prefix: <MailOutlined /> }}
+            placeholder="请输入所在年级"
+            rules={[{ required: true, message: '所在年级是必填项！' }]}
+            onChange={(e) => setQrade(e.target.value)} // 存储年级
+          />
+          {/* 学历选择框 */}
+          <ProFormSelect
+            name="qualification"
+            fieldProps={{ size: 'large' }}
+            options={[
+              { label: '小学', value: '小学' },
+              { label: '初中', value: '初中' },
+              { label: '高中', value: '高中' },
+            ]}
+            placeholder="请选择学历"
+            rules={[{ required: true, message: '学历是必填项！' }]}
+            onChange={(value) => setQualification(value)} // 存储学历
+          />
           <ProFormText.Password
             name="userPassword"
             fieldProps={{ size: 'large', prefix: <LockOutlined /> }}
@@ -284,7 +344,7 @@ const Login: React.FC = () => {
           />
 
           <ProFormCaptcha
-            fieldProps={{ size: 'large', prefix: <CheckCircleOutlined />}}
+            fieldProps={{ size: 'large', prefix: <CheckCircleOutlined /> }}
             captchaProps={{ size: 'large' }}
             placeholder="请输入验证码"
             name="captcha"
@@ -293,18 +353,18 @@ const Login: React.FC = () => {
             rules={[{ required: true, message: '验证码是必填项！' }]}
             onChange={(e) => setCaptchaCode(e.target.value)} // 存储密码
           />
-           <div
+          <div
             style={{
               marginBottom: 24,
             }}
           >
-            <ProFormCheckbox 
-            noStyle 
-            name="autoLogin" 
+            <ProFormCheckbox
+              noStyle
+              name="autoLogin"
             // onChange={(e) => setIsAgreementChecked(e.target.checked)} // 记录协议勾选状态
-          >
-            点击同意协议
-          </ProFormCheckbox>
+            >
+              点击同意协议
+            </ProFormCheckbox>
 
             <Link
               style={{
@@ -315,7 +375,7 @@ const Login: React.FC = () => {
             >
               登录
             </Link>
-            
+
           </div>
         </LoginForm>
 

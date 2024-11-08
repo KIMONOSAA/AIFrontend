@@ -28,6 +28,8 @@ export async function getInitialState(): Promise<{
   const { location } = history;
   if (location.pathname !== loginPath) {
     const currentUser = await fetchUserInfo();
+    console.log('initialState?.currentUser?.userAccount',currentUser);
+    
     return {
       currentUser,
     };
@@ -47,7 +49,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
       },
     },
-    title: 'AI GPT',
+    title: '友伴',
     contentWidth: 'Fixed',
     layout: "top",
     colorPrimary: '#1677FF',

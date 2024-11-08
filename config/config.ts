@@ -74,7 +74,7 @@ export default defineConfig({
    * @name layout 插件
    * @doc https://umijs.org/docs/max/layout-menu
    */
-  title: 'AI GPT',
+  title: '友伴AI',
   layout: {
     locale: false
   },
@@ -132,8 +132,8 @@ export default defineConfig({
       // 或者使用在线的版本
       // schemaPath: "http://localhost:8101/api/v3/api-docs/kimo",
       // schemaPath: "http://localhost:63090/media/v3/api-docs",
-      schemaPath: "http://192.168.101.1:63090/course/v3/api-docs",
-      projectName: "course",
+      schemaPath: "http://192.168.101.1:63090/media/v3/api-docs",
+      projectName: "media",
       // schemaPath: join(__dirname, 'oneapi.json'),
       mock: false,
     },

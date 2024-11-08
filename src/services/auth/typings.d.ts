@@ -1,4 +1,8 @@
 declare namespace API {
+  type addPointParams = {
+    userId: number;
+  };
+
   type AuthentianResponse = {
     refershToken?: string;
     accessToken?: string;
@@ -134,7 +138,9 @@ declare namespace API {
   type registerParams = {
     confirmPassword: string;
     userPassword: string;
+    qualification: string;
     userAccount: string;
+    grade: string;
     email: string;
   };
 
@@ -144,6 +150,11 @@ declare namespace API {
     revoked?: boolean;
     userId?: number;
     token?: string;
+  };
+
+  type updatePointParams = {
+    userId: number;
+    point: number;
   };
 
   type User = {
@@ -166,8 +177,10 @@ declare namespace API {
   };
 
   type UserAddRequest = {
+    qualification?: string;
     password?: string;
     userAccount?: string;
+    grade?: string;
     confirmPassword?: string;
     userName?: string;
     userRole?: string;

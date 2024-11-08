@@ -5,8 +5,8 @@
 import * as bigFileController from './bigFileController';
 import * as mediaFilesController from './mediaFilesController';
 import * as mediaOpenController from './mediaOpenController';
-export {
+export  {
   bigFileController,
-  mediaOpenController,
   mediaFilesController,
+  mediaOpenController,
 };

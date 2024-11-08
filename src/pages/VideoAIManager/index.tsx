@@ -9,7 +9,7 @@ import {
   List,
 } from 'antd';
 const { Option } = Select;
-import { InboxOutlined, PlusOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
+import { EyeOutlined, InboxOutlined, PlusOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import VirtualList from 'rc-virtual-list';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
@@ -258,8 +258,14 @@ const Video: React.FC = () => {
     // console.log('上一个点击', videoUrl);
     // console.log(record);
     const { fileId } = record; // 从record中提取fileId
-    const url = `http://localhost:63090/media/show?fileMd5=${fileId}`
-    setVideoUrl(url);
+    const response = await mediaFilesController.getPreviewUrl({ filemd5: fileId });
+    console.log('response', response.data);
+
+    // console.log('mediaId',mediaId);
+    // setVideoUrl(response.data);
+    // const { fileId } = record; // 从record中提取fileId
+    // const url = `http://192.168.101.132:9000/video/3/4/342602e471862fd9a4301d6239372e27/342602e471862fd9a4301d6239372e27.mp4`
+    setVideoUrl(response.data);
     //  console.log('当前点击:', videoUrl); // 确保 videoUrl 更新后输出
     setPreviewModalOpen(true);
   };
@@ -553,6 +559,7 @@ const Video: React.FC = () => {
           )}
         </Modal>
       </div>
+
     </>
   );
 };
@@ -879,7 +886,7 @@ const Course: React.FC = () => {
   const [PreviewCourseModalOpen, setPreviewCourseModalOpen] = useState(false);
   const [form3Visible, setForm3Visible] = useState(true);
   const [teachplans, setTeachplans] = useState([]); // 新增状态存储 teachplans 数据
-
+  const [previewImageform3, setPreviewImageform3] = useState<string>('');
   const handlePreviewButtonClic = async (record: DataType) => {
     const PreviewId: string = record.fileId;
     const fileIdAsNumber: number = Number(PreviewId);
@@ -932,12 +939,14 @@ const Course: React.FC = () => {
         grade: response.data.courseBase.grade || '空',
         description: response.data.courseBase.description || '空',
         users: response.data.courseBase.users || '空',
-        // pic: response.data.courseBase.pic || '空',
+        pic: response.data.courseBase.pic || '空',
         validDays: response.data.courseBase.validDays || '空',
         memberPrice: response.data.courseBase.memberPrice || '空',
         price: response.data.courseBase.price || '空',
       });
-      // console.log('预览课程数据:', response.data.teachplans);
+      // console.log('预览课程数据:', response.data);
+
+      setPreviewImageform3(`http://192.168.101.132:9000${response.data.courseBase.pic}`);
       // console.log('预览课程数据:', response.data.teachplans[0].teachplanMedia);
       // 处理 teachplans 数据
       const plans = response.data.teachplans.map(plan => ({
@@ -1025,6 +1034,8 @@ const Course: React.FC = () => {
   const [form2] = Form.useForm();
   const [editCourseModalOpen, setEditCourseModalOpen] = useState(false);
   const [fileId, setFileId] = useState<number>(0);
+  const [previewImageform2, setPreviewImageform2] = useState<string>('');
+
   // console.log('编辑id:', fileId);
   async function handleEditButtonClick(record: DataType) {
     // console.log('编辑按钮点击:', record);
@@ -1057,6 +1068,7 @@ const Course: React.FC = () => {
         memberPrice: response.data.memberPrice || 'null',
       });
       // console.log('8855', values);
+      setPreviewImageform2(`http://192.168.101.132:9000${response.data.pic}`);
     } catch (error) {
       console.error('获取课程数据失败:', error);
     }
@@ -1234,6 +1246,9 @@ const Course: React.FC = () => {
     const courseName = form.getFieldValue('name');
     formData.append('objectName', courseName);
     formData.append('filedata', file);
+    console.log('objectName', courseName);
+    console.log('objectName', file);
+
     try {
       const uploadResponse = await mediaFilesController.upload(
         formData
@@ -1262,12 +1277,7 @@ const Course: React.FC = () => {
     formData.append('filedata', file);
     try {
       const uploadResponse = await mediaFilesController.upload(
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
+        formData
       );
       // console.log(uploadResponse);
       const { url } = uploadResponse.data; // 从响应中获取文件的 URL
@@ -1277,7 +1287,6 @@ const Course: React.FC = () => {
       form2.setFieldsValue({ pic: url });
       message.success('图片上传成功！'); // 图片上传成功提示
       // console.log('2表图片上传成功，URL:', url);
-
     } catch (error) {
       // console.error('文件上传失败:', error);
       message.error('图片上传失败，请重试！'); // 图片上传失败提示
@@ -1314,7 +1323,8 @@ const Course: React.FC = () => {
     // 检查 file 对象中是否有 URL，如果没有则使用 FileReader 生成 base64 编码的预览
     if (file.url) {
       // 如果存在 URL，直接使用 URL 进行预览
-      setPreviewImage(file.url);
+      // src={`http://192.168.101.132:9000${file.url}`}
+      // setPreviewImage(`http://192.168.101.132:9000${file.url}`);
     } else {
       // 使用 FileReader 将文件转换为 base64 格式
       const reader = new FileReader();
@@ -1421,7 +1431,7 @@ const Course: React.FC = () => {
           courseId: jxfileId // ID
         });
         // console.log('获取111111111视频列表计划', jxfileId);
-        // console.log('视频列表计划', response.data);
+        // console.log('111视频列表计划', response.data);
         setCoursePlanData(response.data); // 将课程计划数据保存到 state 中
         message.success('视频列表计划已成功加载！');
       } catch (error) {
@@ -1455,7 +1465,7 @@ const Course: React.FC = () => {
   const oneSearchInput = useRef(null);
   const [oneData, setOneData] = useState<OneDataType[]>([]);
   const [oneCurrentPage, setOneCurrentPage] = useState(1);
-  const [onePageSize, setOnePageSize] = useState(2);
+  const [onePageSize, setOnePageSize] = useState(5);
   const [oneTotal, setOneTotal] = useState(0); // 存储总记录数
 
   const oneFetchData = async (page: number, size: number) => {
@@ -1591,16 +1601,18 @@ const Course: React.FC = () => {
     //   ...oneGetColumnSearchProps('oneFileId'),
     // },
   ];
-
-  const [oneteachOpen, setOneteachOpen] = useState(false);
-  const handleAddVideo = (courseId: string) => {
-    setOneteachOpen(true);
-  };
-  const [twomediaId, setTwomediaId] = useState('');
+ const [twomediaId, setTwomediaId] = useState('');
   const [twofileName, setTwofileName] = useState('');
   const [onevideoUrl, setOnevideoUrl] = useState<string | null>(null);
   const [videoDuration, setVideoDuration] = useState<number | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [oneteachOpen, setOneteachOpen] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+  const handleAddVideo = (id: string) => {
+    setSelectedItemId(id)
+    setOneteachOpen(true);
+  };
+ 
   const VideoTeaching = async (teachplanId: number) => {
     // console.log('视频列表计划', twofileName);
     // console.log('teachplanId', teachplanId);
@@ -1609,16 +1621,18 @@ const Course: React.FC = () => {
     // const url = `http://localhost:63090/media/show?fileMd5=${filesId}`
     // setOnevideoUrl(url);
     // totalTime?: string;
+    console.log('当前教学2',selectedItemId);
+    
     try {
       const response = await teachplanController.associationMedia({
         fileName: twofileName,
-        teachplanId: teachplanId,
+        teachplanId: selectedItemId,
         mediaId: twomediaId,
         totalTime: videoDuration ? videoDuration.toString() : '',
       });
       message.success('视频成功加载！');
       // setVideoDuration(null); // 重置视频时长
-      console.log('视频列表计划xxxxx', response);
+      // console.log('视频列表计划xxxxx', response);
       // 假设 response.data 是包含多个课程计划的数组
       // setCoursePlanData(response.data); // 将课程计划数据保存到 state 中
       message.success('视频列表计划已成功加载！');
@@ -1636,7 +1650,40 @@ const Course: React.FC = () => {
   const handleNextStep = () => {
     setForm3Visible(false); // 点击下一步后隐藏 form3
   };
+  const [previewOpenf3, setPreviewOpenf3] = useState(false); // 控制 Modal 显示
+  // const [previewImageform3, setPreviewImageform3] = useState(''); // 图片预览链接
+  const [previewTitlef3, setPreviewTitlef3] = useState(''); // 预览标题
 
+  // 点击图片预览
+  const handlePreview = (file: any) => {
+    setPreviewImageform3(file.url || file.preview); // 设置图片的预览链接
+    // setPreviewTitle(file.name || file.url); // 设置预览的标题
+    setPreviewOpen(true); // 打开 Modal
+  };
+
+  // 关闭 Modal
+  const handleCancelf3 = () => setPreviewOpen(false);
+  //课程编辑
+
+  const [fileList, setFileList] = useState<any>([]); // 文件列表，存储已选择的图片
+  const [isEditing, setIsEditing] = useState(false); // 控制是否是编辑状态
+
+  // 初始图片链接（展示已有的图片）
+
+
+  // 图片预览
+
+
+  // 阻止默认上传行为，手动处理
+
+
+  // 处理文件选择变化
+  const handleChange = ({ fileList: newFileList }: any) => {
+    setFileList(newFileList);
+    if (newFileList.length > 0) {
+      setPreviewImage(newFileList[0].url || newFileList[0].preview); // 更新预览图片
+    }
+  };
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1683,8 +1730,8 @@ const Course: React.FC = () => {
             </Form.Item>
             <Form.Item label="是否收费" name="charge" rules={[{ required: true, message: '请选择是否收费' }]}>
               <Select>
-                <Select.Option value="yes">是</Select.Option>
-                <Select.Option value="no">否</Select.Option>
+                <Select.Option value="201001">付费</Select.Option>
+                <Select.Option value="201000">免费</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item label="年级" name="grade" rules={[{ required: true, message: '请输入课程相应的年级' }]}>
@@ -1802,9 +1849,9 @@ const Course: React.FC = () => {
               >
               </Select>
             </Form.Item>
-            <Form.Item label="课程价格" name="price">
+            {/* <Form.Item label="课程价格" name="price">
               <Input />
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item label="会员课程价格" name="memberPrice">
               <Input />
             </Form.Item>
@@ -1819,8 +1866,8 @@ const Course: React.FC = () => {
             </Form.Item>
             <Form.Item label="是否收费" name="charge" rules={[{ required: true, message: '请选择是否收费' }]}>
               <Select>
-                <Select.Option value="yes">是</Select.Option>
-                <Select.Option value="no">否</Select.Option>
+                <Select.Option value="201001">付费</Select.Option>
+                <Select.Option value="201000">免费</Select.Option>
               </Select>
             </Form.Item>
             {/* <Form.Item label="课程分类" name="mt" rules={[{ required: true, message: '请选择课程分类' }]}>
@@ -1845,6 +1892,11 @@ const Course: React.FC = () => {
               <Input.TextArea rows={4} />
             </Form.Item>
 
+            {/* <Form.Item label="课程封面" name="pic"
+              valuePropName="fileList" getValueFromEvent={normFile}
+            >
+              <img alt="图片预览" style={{ width: '100%' }} src={previewImageform2} />
+            </Form.Item> */}
             <Form.Item label="课程封面" name="pic"
               valuePropName="fileList" getValueFromEvent={normFile}
             >
@@ -1970,6 +2022,42 @@ const Course: React.FC = () => {
               <Form.Item label="适合人群" name="users" rules={[{ required: true, message: '请输入适合人群' }]}>
                 <Input.TextArea rows={4} disabled />
               </Form.Item>
+
+              <Form.Item label="课程封面" name="pic" valuePropName="fileList" getValueFromEvent={normFile}>
+                <div style={{ position: 'relative' }}>
+                  {/* 这里可以添加小眼睛图标按钮来放大图片 */}
+                  <img
+                    alt="图片预览"
+                    style={{ width: '100%' }}
+                    src={previewImageform3} // 使用 previewImageform3 来展示预览的图片
+                  />
+                  {previewImageform3 && (
+                    <EyeOutlined
+                      style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        fontSize: '24px',
+                        color: '#1890ff',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => handlePreview({ url: previewImageform3 })} // 点击小眼睛图标触发放大
+                    />
+                  )}
+                </div>
+
+                {/* 弹出 Modal 放大图片 */}
+                <Modal
+                  visible={previewOpen}
+                  // title={previewTitle}
+                  footer={null}
+                  onCancel={handleCancelf3}
+                  width={1000}
+                >
+                  <img alt="图片预览" style={{ width: '100%' }} src={previewImageform3} />
+                </Modal>
+              </Form.Item>
+
               <Button type="primary" onClick={handleNextStep}>
                 下一步
               </Button>
@@ -2073,7 +2161,9 @@ const Course: React.FC = () => {
                       <Button
                         type="link"
                         onClick={() => {
-                          handleAddVideo(item.courseId);
+                          handleAddVideo(item.id);
+                          console.log('当前点击1',item.id);
+                          
                           // showTeachModal();
                         }}>
                         添加视频
@@ -2088,7 +2178,11 @@ const Course: React.FC = () => {
                           <Button key="cancel" onClick={() => setOneteachOpen(false)}>
                             取消
                           </Button>,
-                          <Button key="submit" type="primary" onClick={() => VideoTeaching(item.id)}>
+                          <Button key="submit" type="primary" onClick={() => {VideoTeaching(item.id)
+                            // console.log('当前点击2',item.id);
+                          }
+                            
+                          }>
                             确认添加视频
                           </Button>,
                         ]}
@@ -2103,9 +2197,9 @@ const Course: React.FC = () => {
                             placeholder="选择视频"
                             onChange={(value, selectedOptions) => {
                               console.log('选中的值:', value, '选中的选项:', selectedOptions, setTwomediaId(value[0]), setTwofileName(selectedOptions[0].label))
-                              const filesId = value; // 从record中提取fileId
-                              const url = `http://localhost:63090/media/show?fileMd5=${filesId}`
-                              setOnevideoUrl(url);
+                              // const filesId = value; // 从record中提取fileId
+                              // const url = `http://localhost:63090/media/show?fileMd5=${filesId}`
+                              // setOnevideoUrl(url);
                             }
                             }
                             onSearch={(value) => console.log(value)}
@@ -2124,7 +2218,7 @@ const Course: React.FC = () => {
                               },
                             }}
                           />
-                          <div style={{ position: 'relative', width: '300px', height: '300px', margin: '0 auto' }}>
+                          {/* <div style={{ position: 'relative', width: '300px', height: '300px', margin: '0 auto' }}>
                             <video
                               ref={videoRef}
                               key={onevideoUrl}
@@ -2147,7 +2241,7 @@ const Course: React.FC = () => {
                               <source src={onevideoUrl} type='video/mp4' />
                               您的浏览器不支持 HTML5 视频。
                             </video>
-                          </div>
+                          </div> */}
                         </div>
                       </Modal>
                       <Button type="link" onClick={() => handleDelete(item.courseId)}>删除</Button>

@@ -6,9 +6,9 @@ import * as permissionController from './permissionController';
 import * as tokenController from './tokenController';
 import * as userController from './userController';
 import * as userMemberController from './userMemberController';
-export {
+export  {
   userController,
   tokenController,
   userMemberController,
-  permissionController,//新增
+  permissionController,
 };

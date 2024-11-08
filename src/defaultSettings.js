@@ -12,9 +12,9 @@ const Settings  = {
   fixedHeader: false,
   fixSiderbar: true,
   siderMenuType: "sub",
-  title: 'AI GPT',
+  title: '友伴',
   pwa: true,
-  logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+  logo: 'http://192.168.101.132:9000/mediafiles/2024/11/08/b8651c36c2ce96bf58516e5660b69ed5.svg',
   iconfontUrl: '',
   token: {
     // 参见ts声明，demo 见文档，通过token 修改样式

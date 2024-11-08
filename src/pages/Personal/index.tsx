@@ -2,9 +2,30 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { getLoginUser } from '@/services/auth/userController'
 import { getAccuracyChartById, listMyPracticeByPage } from '@/services/chart/chartController';
 import { courseBaseInfoController } from '@/services/course/index';
-import { message } from 'antd';
+import { message, Spin } from 'antd';
 import './Personal.scss'
 import ReactECharts from 'echarts-for-react'; // 引入 ECharts 组件
+import { List, Modal, Button } from 'antd';
+import VirtualList from 'rc-virtual-list';
+// 定义容器高度
+const ContainerHeight = 596;
+
+interface TeachPlan {
+    id: number;
+    label: string;
+    pname: string;
+    totalTime: string;
+    description: string;
+    timelength: string;
+}
+
+interface CourseRecord {
+    courseId: number;
+    courseName: string;
+    courseTeachplan: string; // JSON 字符串
+    updateTime: number;
+}
+
 export default function Personal() {
     //个人信息
     const [activeTab, setActiveTab] = useState('personalInfo')
@@ -33,22 +54,25 @@ export default function Personal() {
     const userType = getUserTypeDescription(userInfo.member);
 
     //学习记录
-    const [activeTabb, setActiveTabb] = useState('practice'); // 当前显示的标签
-    const [practiceData, setPracticeData] = useState<any[]>([]); // 练习记录
-    const [courseData, setCourseData] = useState<any[]>([]); // 课程记录
+
     const [practicePage, setPracticePage] = useState(1); // 当前练习记录分页
     const [coursePage, setCoursePage] = useState(1); // 当前课程记录分页
-    const [loading, setLoading] = useState(false); // 加载状态
     // 获取练习记录
+    const [practiceData, setPracticeData] = useState<any[]>([]); // 练习记录数据
+    const [loading, setLoading] = useState(false); // 加载状态
+    const [activeTabb, setActiveTabb] = useState('practice'); // 当前标签
+    const [aiResult, setAiResult] = useState<string>(''); // 当前分析结果
+
     const fetchUserPractice = useCallback(async (page: number) => {
+        message.success('练习记录...');
         try {
             setLoading(true);
+            // 假设这里是从接口请求数据
             const response = await listMyPracticeByPage({
                 current: page,
-                pageSize: 5, // 每次加载5条
+                pageSize: 5, // 每次加载5条记录
             });
             console.log('获取练习记录', response);
-
             setPracticeData(prevData => [...prevData, ...response.data.records]);
         } catch (error) {
             console.error('Error fetching practice data:', error);
@@ -57,7 +81,76 @@ export default function Personal() {
         }
     }, []);
 
+    // const handleTabChange = (tab: string) => {
+    //   setActiveTabb(tab);
+    //   if (tab === 'practice') {
+    //     setPracticeData([]); // 清空练习记录
+    //   } else if (tab === 'course') {
+    //     // 课程数据清空逻辑
+    //   }
+    // };
+
+    const handleScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
+        if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === innerHeight) {
+            fetchUserPractice(practiceData.length / 5 + 1); // 下一页
+        }
+    };
+
+    // useEffect(() => {
+    //   if (activeTabb === 'practice') {
+    //     fetchUserPractice(1); // 加载第一页练习记录
+    //   } else if (activeTabb === 'course') {
+    //     // 加载课程记录
+    //   }
+    // }, [activeTabb]);
+
+    const showAiResult = (result: string) => {
+        setAiResult(result);
+        setIsModalOpenresult(true);
+    };
+    //课程记录
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
+    //练习记录
+    const [isModalOpenresult, setIsModalOpenresult] = useState(false);
+
+    const handleOkResult = () => {
+        setIsModalOpenresult(false);
+    };
+
+    const handleCancelResult = () => {
+        setIsModalOpenresult(false);
+    };
     // 获取课程记录
+    const [courseData, setCourseData] = useState<CourseRecord[]>([]);
+    const [selectedTeachPlan, setSelectedTeachPlan] = useState<TeachPlan[]>([]);
+
+    // 格式化时间为日期格式
+    const formatDate = (timestamp: number) => {
+        // console.log('格式化时间', timestamp);
+
+        const date = new Date(timestamp);
+        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    };
+
+    const formatTime = (seconds: number) => {
+        const hours = Math.floor(seconds / 3600); // 获取小时
+        const minutes = Math.floor((seconds % 3600) / 60); // 获取分钟
+        const remainingSeconds = Math.round(seconds % 60); // 获取秒
+
+        // 格式化成 HH:mm:ss 格式
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    };
+
+    // 获取课程记录并实现分页加载
     const fetchUserRecord = useCallback(async (page: number) => {
         try {
             setLoading(true);
@@ -66,8 +159,7 @@ export default function Personal() {
                 pageSize: 5, // 每次加载5条
             });
             console.log('获取课程记录', response);
-
-            setCourseData(prevData => [...prevData, ...response.data.records]);
+            setCourseData((prevData) => [...prevData, ...response.data.records]);
         } catch (error) {
             console.error('Error fetching course record:', error);
         } finally {
@@ -75,32 +167,27 @@ export default function Personal() {
         }
     }, []);
 
-    // 格式化时间为日期格式
-    const formatDate = (timestamp: number) => {
-        const date = new Date(timestamp);
-        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
-    };
 
-    // 点击按钮显示课程计划内容
+
+    // 点击按钮显示教学计划内容
     const handleShowTeachPlan = (teachPlanJson: string) => {
-        const teachPlan = JSON.parse(teachPlanJson);
-        alert(`教学计划：${JSON.stringify(teachPlan, null, 2)}`);
+        const teachPlan = JSON.parse(teachPlanJson) as TeachPlan[];
+        setSelectedTeachPlan(teachPlan);
+        setIsModalOpen(true); // 打开模态框
     };
 
+    // 模态框关闭操作
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+    };
 
-    // 监听滚动事件，加载更多数据
-    const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-        const bottom = event.target.scrollHeight === event.target.scrollTop + event.target.clientHeight;
-        if (bottom && !loading) {
-            if (activeTabb === 'practice') {
-                setPracticePage(prev => prev + 1);
-                fetchUserPractice(practicePage + 1); // 加载下一页练习记录
-            } else if (activeTabb === 'course') {
-                setCoursePage(prev => prev + 1);
-                fetchUserRecord(coursePage + 1); // 加载下一页课程记录
-            }
+    // 处理滚动事件加载更多数据
+    const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
+        if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === ContainerHeight && !loading) {
+            fetchUserRecord(courseData.length / 5 + 1); // 每次加载更多5条
         }
     };
+
 
     // 切换标签
     const handleTabChange = (tab: string) => {
@@ -109,7 +196,6 @@ export default function Personal() {
         // 每次切换标签时重置页面和记录
         if (tab === 'practice') {
             setPracticeData([]); // 清空练习记录
-
         } else if (tab === 'course') {
             setCourseData([]); // 清空课程记录
         }
@@ -123,6 +209,19 @@ export default function Personal() {
         }
     }, [activeTabb]);
 
+    // 监听滚动事件，加载更多数据
+    // const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    //     const bottom = event.target.scrollHeight === event.target.scrollTop + event.target.clientHeight;
+    //     if (bottom && !loading) {
+    //         if (activeTabb === 'practice') {
+    //             setPracticePage(prev => prev + 1);
+    //             fetchUserPractice(practicePage + 1); // 加载下一页练习记录
+    //         } else if (activeTabb === 'course') {
+    //             setCoursePage(prev => prev + 1);
+    //             fetchUserRecord(coursePage + 1); // 加载下一页课程记录
+    //         }
+    //     }
+    // };
 
 
     //个人分析图
@@ -170,16 +269,16 @@ export default function Personal() {
                         <div className="main-content" style={{ paddingLeft: '300px', marginTop: '100px' }}>
                             <h1>个人信息</h1>
                             <div className="avatar-section">
-                                {/* <img src="data:image/png;base64, ${userInfo.userAvatar}" alt="用户头像" /> */}
+                                <img src={`data:image/png;base64, ${userInfo.userAvatar}`} alt="用户头像" />
                             </div>
                             <div className="user-details">
                                 <div className="info-item">
-                                    <span className="info-label required">账号</span>
+                                    <span className="info-label">账号</span>
                                     <div className="info-value">{userInfo.userAccount || '空'}</div>
                                 </div>
                                 <div className="info-item">
                                     <span className="info-label">昵称</span>
-                                    <div className="info-value">{userInfo.nickname || '空'}</div>
+                                    <div className="info-value">{userInfo.userName || '空'}</div>
                                 </div>
                                 <div className="info-item">
                                     <span className="info-label">年级</span>
@@ -225,57 +324,122 @@ export default function Personal() {
                         </div>
 
                         {/* 根据 activeTab 渲染不同的记录列表 */}
+                        {/* 滚动加载列表 */}
                         {activeTabb === 'practice' && (
-                            <ul className="record-list" onScroll={handleScroll}>
-                                {practiceData.map((item, index) => (
-                                    <li key={index} className="record-item">
-                                        <div className="record-info">
-                                            <div className="record-title">练习科目：{item.subjects}</div>
-                                            <div className="record-date">创建时间：{item.createTime}</div>
-                                            <div className="record-total-score">
-                                                总分：{item.practicePoint} | 错误：{item.userError} | 正确：{item.userRight}
+                            <VirtualList
+                                data={practiceData}
+
+                                // style={{
+                                //     height: '596px', // 设置容器的高度
+                                //     overflow: 'auto', // 启用滚动
+                                //     padding: '0 16px', // 内边距，避免内容贴边
+                                //     border: '1px solid rgba(140, 140, 140, 0.35)', // 浅灰色边框
+                                //     borderRadius: '4px', // 可选：给边框添加圆角效果
+                                // }}
+                                height={596} // 设置 VirtualList 的显示区域高度，显示5条记录
+                                itemHeight={84} // 每条记录的高度
+                                itemKey="id"
+                                onScroll={handleScroll}
+                            >
+                                {(item: any) => (
+                                    <List.Item key={item.id} style={{ listStyleType: 'none' }}>
+                                        <div className="record-item">
+                                            <div className="record-info">
+                                                <div className="record-title">练习科目：{item.subjects}</div>
+                                                <div className="record-date">创建时间：{formatDate(new Date(item.createTime))}</div>
+                                                <div className="record-total-score">
+                                                    总分：{item.practicePoint} | 错误：{item.userError} | 正确：{item.userRight}
+                                                </div>
                                             </div>
+                                            <Button type="primary" onClick={() => showAiResult(item.airesult)}>
+                                                查看分析
+                                            </Button>
                                         </div>
-                                        <button onClick={() => alert(item.airesult)}>查看分析</button>
-                                    </li>
-                                ))}
-                            </ul>
+                                    </List.Item>
+                                )}
+                            </VirtualList>
                         )}
 
+                        {/* 分析结果 Modal */}
+                        <Modal title="分析结果" open={isModalOpenresult} onOk={handleOkResult} onCancel={handleCancelResult}>
+                            <p>{aiResult}</p>
+                        </Modal>
+
+
+                        {/* 课程记录列表 */}
                         {activeTabb === 'course' && (
-                           <ul className="record-list" onScroll={handleScroll}>
-                           {courseData.map((item, index) => {
-                               // 解析 JSON 字符串
-                               const teachPlan = item.courseTeachplan ? JSON.parse(item.courseTeachplan) : [];
-                   
-                               return (
-                                   <li key={index} className="record-item">
-                                       <div className="record-info">
-                                           <div className="record-title">{item.courseName}</div>
-                                           <div className="record-label">
-                                               {/* 显示解析后的标签信息 */}
-                                               {teachPlan.length > 0 ? (
-                                                   <>
-                                                       <div>标签：{teachPlan[0].label}</div>
-                                                       <div>教学计划：{teachPlan[0].pname}</div>
-                                                   </>
-                                               ) : (
-                                                   <div>教学计划暂无</div>
-                                               )}
-                                           </div>
-                                           <div className="record-progress">
-                                               已观看：{item.timelength} / 总时间：{item.totalTime}
-                                           </div>
-                                       </div>
-                                       <div className="record-date">最后更新时间：{formatDate(item.updateTime)}</div>
-                                       <button onClick={() => handleShowTeachPlan(item.courseTeachplan)}>
-                                           预览教学计划
-                                       </button>
-                                   </li>
-                               );
-                           })}
-                       </ul>
+                            <div>
+                                <List>
+                                    <VirtualList
+                                        data={courseData}
+                                        height={ContainerHeight}
+                                        itemHeight={73} // 每项高度
+                                        itemKey="courseId"
+                                        onScroll={onScroll}
+                                    >
+                                        {(item: CourseRecord) => {
+                                            // 解析 JSON 字符串
+                                            const teachPlan = item.courseTeachplan ? JSON.parse(item.courseTeachplan) : [];
+                                            return (
+                                                <List.Item key={item.courseId}>
+                                                    <List.Item.Meta
+                                                        title={<a href="#">{item.courseName}</a>}
+                                                        description={`最后更新时间：${formatDate(item.updatetime)}`}
+                                                    // description={`最后更新时间：${formatDate(item.updatetime)}`}
+                                                    />
+                                                    <div>
+                                                        {/* 标签和教学计划展示 */}
+                                                        {teachPlan.length > 0 ? (
+
+                                                            <Button
+                                                                style={{ marginRight: '50px' }}
+                                                                onClick={() => handleShowTeachPlan(item.courseTeachplan)} type="primary">
+                                                                预览教学计划
+                                                            </Button>
+
+                                                        ) : (
+                                                            <div>教学计划暂无</div>
+                                                        )}
+                                                    </div>
+                                                </List.Item>
+                                            );
+                                        }}
+                                    </VirtualList>
+                                    {loading && <Spin />}
+                                </List>
+                            </div>
                         )}
+
+                        {/* 教学计划模态框 */}
+                        <Modal
+                            title="教学计划详情"
+                            visible={isModalOpen}
+                            onCancel={handleModalClose}
+                            footer={null}
+                            width={600}
+                        >
+                            <List
+                                dataSource={selectedTeachPlan}
+                                renderItem={(plan) => (
+                                    <List.Item key={plan.id}>
+                                        <List.Item.Meta
+                                            title={<span>教学计划名称：{plan.pname}</span>}
+                                            description={
+                                                <>
+                                                    <div>知识点：{plan.label}</div>
+                                                    <div>
+                                                        已观看：{formatTime(plan.timelength)} 总时间：{formatTime(plan.totalTime)}
+                                                    </div>
+
+                                                    <div>描述：{plan.description}</div>
+                                                </>
+                                            }
+                                        />
+                                    </List.Item>
+                                )}
+                            />
+                        </Modal>
+
                     </div>
                 );
             case 'performanceStats':
@@ -440,7 +604,7 @@ export default function Personal() {
                     <h2>个人中心</h2>
                     <ul>
                         <li><a onClick={() => setActiveTab('personalInfo')} className={activeTab === 'personalInfo' ? 'active' : ''}><span className="icon">📋</span>个人信息</a></li>
-                        <li><a onClick={() => setActiveTab('accountSecurity')} className={activeTab === 'accountSecurity' ? 'active' : ''}><span className="icon">🔒</span>账号安全</a></li>
+                        {/* <li><a onClick={() => setActiveTab('accountSecurity')} className={activeTab === 'accountSecurity' ? 'active' : ''}><span className="icon">🔒</span>账号安全</a></li> */}
                         <li><a onClick={() => setActiveTab('performanceStats')} className={activeTab === 'performanceStats' ? 'active' : ''}><span className="icon">📊</span>成绩统计</a></li>
                         <li><a onClick={() => setActiveTab('learningRecords')} className={activeTab === 'learningRecords' ? 'active' : ''}><span className="icon">📝</span>学习记录</a></li>
                     </ul>

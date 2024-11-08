@@ -305,7 +305,10 @@ h1 {
     text-align: left;
     color: #333;
     position: relative;
+    font-size: 16px;  /* 设置字体大小 */
+    font-weight: bold;  /* 设置字体加粗 */
 }
+
 
 .info-label::after {
     content: ':';
@@ -320,6 +323,8 @@ h1 {
     border-radius: 4px;
     background-color: #fafafa;
     min-height: 20px;
+    font-size: 16px;  /* 设置字体大小 */
+    // font-weight: bold;  /* 设置字体加粗 */
 }
 
 .required::before {

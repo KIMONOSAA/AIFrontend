@@ -1,5 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
+
+
 import { request } from '@umijs/max';
 const baseUrl = '/auth';
 import { getHeaders } from '@/global';
@@ -30,7 +32,20 @@ export async function getAuthentication(
     ...(options || {}),
   });
 }
-
+/** 此处后端没有提供注释 POST /auth/add/point */
+export async function addPoint(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.addPointParams,
+  options?: { [key: string]: any },
+) {
+  return request<boolean>(`${baseUrl}/auth/add/point`, {
+    method: 'POST',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
 /** 此处后端没有提供注释 POST /auth/delete */
 export async function deleteUser(body: API.DeleteRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseBoolean>(`${baseUrl}/auth/delete`, {
@@ -159,40 +174,7 @@ export async function logout(options?: { [key: string]: any }) {
   });
 }
 
-/** 此处后端没有提供注释 POST /auth/publish */
-export async function getPublishEvent(
-  body: API.UserPublishEventRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseBoolean>(`${baseUrl}/auth/publish`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
 
-/** 此处后端没有提供注释 POST /auth/register */
-export async function register(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  // params: API.registerParams,
-  body: FormData,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseLong>(`${baseUrl}/auth/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    },
-    // params: {
-    //   ...params,
-    // },
-    data: body,
-    ...(options || {}),
-  });
-}
 
 /** 此处后端没有提供注释 POST /auth/sign */
 export async function userSign(
@@ -232,6 +214,16 @@ export async function updateUser(body: API.UserUpdateRequest, options?: { [key: 
   });
 }
 
+
+/** 此处后端没有提供注释 POST /auth/vip */
+export async function settingUserIsVip(options?: { [key: string]: any }) {
+  return request<API.BaseResponseBoolean>(`${baseUrl}/auth/vip`, {
+    method: 'POST',
+    ...(options || {}),
+    headers: getHeaders(),
+  });
+}
+//888
 /** 此处后端没有提供注释 POST /auth/verificationEmail */
 export async function checkVerificationEmail(
   body: API.UserEmailVerificationRequest,
@@ -247,11 +239,37 @@ export async function checkVerificationEmail(
   });
 }
 
-/** 此处后端没有提供注释 POST /auth/vip */
-export async function settingUserIsVip(options?: { [key: string]: any }) {
-  return request<API.BaseResponseBoolean>(`${baseUrl}/auth/vip`, {
+/** 此处后端没有提供注释 POST /auth/publish */
+export async function getPublishEvent(
+  body: API.UserPublishEventRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseLong>(`${baseUrl}/auth/publish`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
     ...(options || {}),
-    headers: getHeaders(),
   });
 }
+/** 此处后端没有提供注释 POST /auth/register */
+export async function register(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  // params: API.registerParams,
+  body: FormData,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseLong>(`${baseUrl}/auth/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    // params: {
+    //   ...params,
+    // },
+    data: body,
+    ...(options || {}),
+  });
+}
+//8
