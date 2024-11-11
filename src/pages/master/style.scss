@@ -445,12 +445,19 @@ body {
 
 /* 课程选择 */
 .container {
-    width: calc(100% - 40px);
-    margin: 0 auto;
-    padding: 20px;
-    
+    // width: calc(100% - 40px);
+    // margin: 0 auto;
+    padding: 20px 0;
+    width: 100%;
+    margin:0 80px
 }
 
+// .container {
+//     width: calc(100% - 40px);
+//     margin: 0 auto;
+//     padding: 20px;
+
+// }
 .section-title {
     font-size: 31px;
     font-weight: bold;
@@ -512,7 +519,7 @@ body {
 }
 
 .nav-item.active {
-    background-color: #1890ff;
+    background-color: #1769fe;
     color: white;
 }
 
@@ -543,22 +550,72 @@ body {
 
 // 课程信息卡
 
+// .course-container {
+//     width: calc(100% - 1508px);
+//     height: 306.89px;
+//     padding: 8px;
+//     float: left;
+//     margin-left: 10px;
+//     background: #fff;
+//     border-radius: 5px;
+//     transition: transform 0.25s;
+//     margin-left: 67px;
+//     margin-bottom: 30px;
+//     border: 1px solid rgba(0, 0, 0, 0.1);
+//     /* 修改边框颜色 */
+//     /* 添加这一行 */
+// }
+// .course-container {
+//     width: calc(100% - 1720px);
+//     // width: 430px;
+//     height: 300px;
+   
+//     float: left;
+//     // margin-left: 10px;
+//     background: #fff;
+//     border-radius: 5px;
+//     transition: transform 0.25s;
+//     // margin-left: 67px;
+//     margin-bottom: 30px;
+//     border: 1px solid rgba(0, 0, 0, 0.1);
+//     /* 修改边框颜色 */
+//     /* 添加这一行 */
+// }
+
 .course-container {
-    width: calc(100% - 1508px);
-    height: 306.89px;
-    padding: 8px;
+    width: calc((100% - 80px) / 4); /* 适应页面宽度的动态计算，4表示一行4列，80px 为总的边距间隔 */
+    max-width: 430px; /* 设置最大宽度为 430px */
+    min-width: 300px; /* 可选：设置最小宽度，防止在小屏幕上过小 */
+    height: 300px;
     float: left;
-    margin-left: 10px;
     background: #fff;
     border-radius: 5px;
     transition: transform 0.25s;
-    margin-left: 67px;
     margin-bottom: 30px;
+    margin:0 8px;
+    // margin-left: 10px; /* 添加左边距以间隔每列 */s
+    
     border: 1px solid rgba(0, 0, 0, 0.1);
-    /* 修改边框颜色 */
-    /* 添加这一行 */
 }
 
+/* 响应式调整，在小屏幕上调整每行项目数 */
+@media (max-width: 1200px) {
+    .course-container {
+        width: calc((100% - 60px) / 3); /* 一行显示3个 */
+    }
+}
+
+@media (max-width: 900px) {
+    .course-container {
+        width: calc((100% - 40px) / 2); /* 一行显示2个 */
+    }
+}
+
+@media (max-width: 600px) {
+    .course-container {
+        width: calc(100% - 20px); /* 单列显示 */
+    }
+}
 .course-container:hover {
     transform: translateY(-10px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -577,9 +634,11 @@ body {
     height: 100%;
     object-fit: cover;
 }
+
 .course-image img:hover {
-    cursor: pointer; 
+    cursor: pointer;
 }
+
 .course-title {
     font-size: 16px;
     color: #333;
@@ -592,7 +651,8 @@ body {
 
 .course-desc {
     font-size: 14px;
-    color: #545454;
+    color: #545454a6;
+    // color: #545454;
     /* 修改颜色为浅灰色 */
     margin-bottom: 4px;
     overflow: hidden;
@@ -620,7 +680,7 @@ body {
 }
 
 .school-name {
-    font-size:14px;
+    font-size: 14px;
     color: #666;
 }
 
@@ -641,12 +701,14 @@ body {
 
 .course-title:hover {
     color: #3a3aff;
-    cursor: pointer; 
+    cursor: pointer;
 }
+
 .course-desc:hover {
     color: #3a3aff;
-    cursor: pointer; 
+    cursor: pointer;
 }
+
 //新加的
 .course-meta {
     margin-top: 10px;

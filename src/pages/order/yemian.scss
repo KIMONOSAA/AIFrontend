@@ -81,9 +81,12 @@ body {
 
 .payment-section {
     display: flex;
-    justify-content: space-between;
+    // float: left;
+    // justify-content: space-between;
     padding: 20px;
     border-top: 1px solid #e0e0e0;
+    width: 50%; /* 设置一个宽度，例如 80% */
+    margin: 0 auto; /* 自动左右居中 */
 }
 
 .qr-code {
@@ -93,11 +96,13 @@ body {
 }
 
 .payment-details {
-    text-align: right;
+    text-align: left;
+    margin-top: 20px;
+    margin-left: 20px;
 }
 
 .payment-price {
-    font-size: 1.5em;
+    font-size: 27px;
     font-weight: bold;
     color: #ff4500;
 }

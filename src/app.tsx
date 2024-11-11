@@ -29,7 +29,7 @@ export async function getInitialState(): Promise<{
   if (location.pathname !== loginPath) {
     const currentUser = await fetchUserInfo();
     console.log('initialState?.currentUser?.userAccount',currentUser);
-    
+  
     return {
       currentUser,
     };

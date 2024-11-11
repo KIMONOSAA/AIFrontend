@@ -150,16 +150,34 @@ const Master: React.FC = () => {
                         </div>
                     ))}
                 </div>
-                <div className="payment-section">
+                <div className="payment-section"
+                // style={{
+                //     // padding:'0 50px'
+                //     margin:'0 auto'
+
+                // }}
+                >
                     <Flex gap="middle" wrap >
                         {!qrValue && (
-                            <QRCode value={'https://ant.design'} status="active" size={250} />
+                            // <QRCode value={'https://ant.design'} status="active" size={250} />
+                            <QRCode value={'https://ant.design'} status="loading" size={250}/>
                         )}
                         {qrValue && (
                             <img src={qrValue} width={250} height={250}>
                             </img>
                         )}
-                        <Button type="primary" onClick={getResult}>
+                        
+                    </Flex>
+                    <div className="payment-details">
+                        <div style={{fontSize: '19px'}}>实付款：<span className="payment-price">{selectedPrice}</span></div>
+                        <div>开通前请阅读并同意<a href="#">《会员服务协议》</a></div>
+                        <div className="payment-methods">
+                            支持：<AlipayOutlined style={{ fontSize: '24px', marginRight: '8px' }} />支付宝
+                        </div>
+                        <Button type="primary" onClick={getResult}
+                        style={{marginTop: '10px'}}
+
+                        >
                             获取结果
                         </Button>
                         <Modal
@@ -182,13 +200,6 @@ const Master: React.FC = () => {
                                 </>
                             )}
                         </Modal>
-                    </Flex>
-                    <div className="payment-details">
-                        <div>实付款：<span className="payment-price">{selectedPrice}</span></div>
-                        <div>开通前请阅读并同意<a href="#">《会员服务协议》</a></div>
-                        <div className="payment-methods">
-                            支持：<AlipayOutlined style={{ fontSize: '24px', marginRight: '8px' }} />支付宝
-                        </div>
                     </div>
                 </div>
                 <div style={{ textAlign: 'center', padding: '20px' }}>
