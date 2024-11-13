@@ -556,7 +556,7 @@ export default function Personal() {
           border-radius: 50%;
           margin-left: 10px;
         }
-        .container {
+        .containerp {
           display: flex;
           margin: 20px;
         }
@@ -599,7 +599,7 @@ export default function Personal() {
         //   margin:0 auto;
         }
       `}</style>
-            <div className="container">
+            <div className="containerp">
                 <aside className="sidebar">
                     <h2>个人中心</h2>
                     <ul>

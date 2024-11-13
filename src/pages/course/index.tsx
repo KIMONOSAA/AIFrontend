@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Layout, List, Tag } from 'antd';
-import { EyeOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { Button, Card, Input, Layout, List, Space, Tag, Typography } from 'antd';
+import { BookOutlined, CloseOutlined, DeleteOutlined, EyeOutlined, PlayCircleOutlined, ScheduleOutlined, SendOutlined, UploadOutlined } from '@ant-design/icons';
 import { courseOpenController, courseLearnRecordController } from '@/services/course/index';
 import { mediaFilesController } from '@/services/media/index';
 import './style.scss';
-
+//新
+const { Text } = Typography;
 const { Content, Sider } = Layout;
 const CourseDetail: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -51,11 +52,11 @@ const CourseDetail: React.FC = () => {
     // }http://192.168.101.132:9090/browser/video/3%2F4%2F342602e471862fd9a4301d6239372e27%2F342602e471862fd9a4301d6239372e27.mp4
 
     // const newUrl = "http://192.168.101.132:9090/browser/3%2F4%2F342602e471862fd9a4301d6239372e27%2F342602e471862fd9a4301d6239372e27.mp4"
-    const response =await mediaFilesController.getPreviewUrl({filemd5:mediaId});
-    console.log('response',response.data);
-    
-    console.log('mediaId',mediaId);
-    
+    const response = await mediaFilesController.getPreviewUrl({ filemd5: mediaId });
+    console.log('response', response.data);
+
+    console.log('mediaId', mediaId);
+
     // const newUrl = `http://localhost:63090/media/show?fileMd5=${mediaId}`;
     // const newUrl = `http://192.168.101.132:9000/video/5/c/5cb1bb93bad3f46156769f02c112bc6b/5cb1bb93bad3f46156769f02c112bc6b.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=adminminio%2F20241108%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241108T075342Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=78398a1506551d0a511d40dc0e22296191293fe35e69b60ff980d21fa08c00b2`;
     // const newUrl = "https://media.w3.org/2010/05/sintel/trailer_hd.mp4";
@@ -240,7 +241,7 @@ const CourseDetail: React.FC = () => {
 
   //时间线(e.buttons & 1)右键点击就是1所以e.buttons是看看你有没有点击有点击才会更新没点击而是移动的话就只会灰色的进度条跟你移动
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-   
+
 
     if (timelinecontainer.current && videoRef.current) {
       const rect = timelinecontainer.current.getBoundingClientRect()
@@ -345,6 +346,17 @@ const CourseDetail: React.FC = () => {
       };
     }
   }, []);
+
+  //AI对话。。
+  const [showChat, setShowChat] = useState(false); // 控制对话框显示状态
+
+  const handleAIButtonClick = () => {
+    setShowChat(true); // 点击按钮后显示对话框
+  };
+
+  const handleCloseChat = () => {
+    setShowChat(false); // 关闭对话框
+  };
   return (
     <Layout style={{ overflow: 'hidden', width: '100%' }}>
       <Content style={{ padding: '20px' }}>
@@ -352,6 +364,7 @@ const CourseDetail: React.FC = () => {
           <div style={{ marginBottom: '-60px' }}>
             <span style={{ fontSize: '24px', fontWeight: 'bold' }}>{courseInfo.name || '无'}</span>
           </div>
+          {/* 视频播放器 */}
           <div className='video-all'>
             <div className='left'>
               <div ref={videoContainer} className={`video-container ${isPaused ? 'play' : 'paused'}`} data-volume-level="high">
@@ -537,6 +550,7 @@ const CourseDetail: React.FC = () => {
             </video> */}
 
           {/* </div> */}
+          {/* 视频介绍 */}
           <div style={{ marginTop: '20px', gap: '10px', flexWrap: 'wrap' }}>
             {courseInfo && (
               <>
@@ -561,7 +575,7 @@ const CourseDetail: React.FC = () => {
           </div>
         </div>
       </Content>
-      <Sider width={300} style={{ background: '#fff' }}>
+      <Sider width={300} style={{ background: '#fff', marginRight: '50px' }}>
         <div style={{ padding: '20px' }}>
           <Button type="primary" style={{ marginBottom: '20px', width: '100%', backgroundColor: '#1677ff' }}>
             教学计划集合
@@ -615,7 +629,334 @@ const CourseDetail: React.FC = () => {
             )}
           />
         </div>
+
       </Sider>
+      {/* AI点击 */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px', // 使div水平居中
+          zIndex: 1000, // 示例z-index值，您可能需要根据实际情况进行调
+        }}
+        onClick={handleAIButtonClick} // 点击显示AI对话界面
+      >
+        <Card
+          style={{
+            width: 'fit-content',
+            borderRadius: '16px',
+            padding: '12px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+            border: 'none',
+            background: 'white'
+          }}
+          bodyStyle={{
+            padding: '0',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '4px'
+          }}
+        >
+          <svg
+            viewBox="0 0 24 12"
+            style={{
+              width: '24px',
+              height: '12px'
+            }}
+          >
+            <path
+              d="M2 10C2 10 5 2 8 2C11 2 13 10 16 10C19 10 22 2 22 2"
+              stroke="#1677ff"
+              strokeWidth="4"
+              strokeLinecap="round"
+              fill="none"
+            />
+          </svg>
+
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}>
+            <Text strong style={{ fontSize: '16px' }}>AI</Text>
+            <Text strong style={{ fontSize: '16px' }}>助</Text>
+            <Text strong style={{ fontSize: '16px' }}>手</Text>
+          </div>
+        </Card>
+      </div>
+      {/* AI对话 */}
+      {showChat && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '10px',
+            height: 'calc(100vh - 100px)',
+            // backgroundColor: 'red',
+            zIndex: 1001,
+            display: 'flex',
+            width: '600px',
+          }}
+        >
+          <Card
+            style={{
+              maxWidth: '800px',
+              margin: '0 auto',
+              borderRadius: '16px',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+            }}
+            bodyStyle={{ padding: 0 }}
+          >
+            {/* Header */}
+
+            <div style={{
+              padding: '16px 24px',
+              borderBottom: '1px solid #f0f0f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'linear-gradient(90deg, #1890ff, #36cfc9)',
+              borderTopLeftRadius: '16px',
+              borderTopRightRadius: '16px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <svg viewBox="0 0 24 24" style={{ width: 28, height: 28, color: 'white' }}>
+                  <path fill="currentColor" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                <span style={{ fontWeight: 600, fontSize: '18px', color: 'white' }}>有伴AI</span>
+              </div>
+              <Space>
+                <Button type="text" icon={<DeleteOutlined style={{ color: 'white' }} />} />
+                <Button type="text" icon={<CloseOutlined style={{ color: 'white' }} />} onClick={handleCloseChat} />
+
+              </Space>
+            </div>
+
+            {/* Chat Content */}
+            <div style={{
+              padding: '24px',
+              // maxHeight: '60vh', 
+              maxHeight: '643px', 
+              // height:'100%',
+              // height: 'calc(100% - 50px)',
+              overflowY: 'auto',
+             
+            }}
+             className="chat-content"
+            >
+              {/* User Question */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                <Card
+                  style={{
+                    borderTopLeftRadius: '20px',
+                    borderBottomLeftRadius: '20px',
+                    borderTopRightRadius: '4px',
+                    borderBottomRightRadius: '20px',
+                    backgroundColor: '#0082FF',
+                    maxWidth: '70%',
+                    boxShadow: '0 2px 8px rgba(0,130,255,0.2)'
+                  }}
+                >
+                  <Text style={{ color: 'white', fontSize:'16px' }}>今晚吃什么？</Text>
+                </Card>
+                {/* <Avatar icon={<UserOutlined />} style={{ marginLeft: '12px' }} /> */}
+              </div>
+
+              {/* AI Answer */}
+              <div style={{ display: 'flex', marginBottom: '20px' }}>
+                {/* <Avatar icon={<RobotOutlined />} style={{ marginRight: '12px', backgroundColor: '#1890ff' }} /> */}
+                <Card
+                  style={{
+                    borderTopLeftRadius: '4px',
+                    borderBottomLeftRadius: '20px',
+                    borderTopRightRadius: '20px',
+                    borderBottomRightRadius: '20px',
+                    backgroundColor: 'white',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    maxWidth: '70%'
+                  }}
+                >
+                  <Text style={{ color: 'rgba(0,0,0,0.85)' ,fontSize:'16px'}}>
+                    不好意思，我的专业知识仅限于计算机技术，无法为您提供今晚吃什么的建议。
+                  </Text>
+                </Card>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                <Card
+                  style={{
+                    borderTopLeftRadius: '20px',
+                    borderBottomLeftRadius: '20px',
+                    borderTopRightRadius: '4px',
+                    borderBottomRightRadius: '20px',
+                    backgroundColor: '#0082FF',
+                    maxWidth: '70%',
+                    boxShadow: '0 2px 8px rgba(0,130,255,0.2)'
+                  }}
+                >
+                  <Text style={{ color: 'white' }}>今晚吃什么？今晚吃什么？今晚吃什么？今晚吃什么？今晚吃什么？今晚吃什么？今晚吃什么？</Text>
+                </Card>
+                {/* <Avatar icon={<UserOutlined />} style={{ marginLeft: '12px' }} /> */}
+              </div>
+              <div style={{ display: 'flex', marginBottom: '20px' }}>
+                {/* <Avatar icon={<RobotOutlined />} style={{ marginRight: '12px', backgroundColor: '#1890ff' }} /> */}
+                <Card
+                  style={{
+                    borderTopLeftRadius: '4px',
+                    borderBottomLeftRadius: '20px',
+                    borderTopRightRadius: '20px',
+                    borderBottomRightRadius: '20px',
+                    backgroundColor: 'white',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    maxWidth: '70%'
+                  }}
+                >
+                  <Text style={{ color: 'rgba(0,0,0,0.85)' }}>
+                    不好意思，我的专业知识仅限于计算机技术，无法为您提供今晚吃什么的建议。不好意思，我的专业知识仅限于计算机技术，无法为您提供今晚吃什么的建议。不好意思，我的专业知识仅限于计算机技术，无法为您提供今晚吃什么的建议。
+                  </Text>
+                </Card>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                <Card
+                  style={{
+                    borderTopLeftRadius: '20px',
+                    borderBottomLeftRadius: '20px',
+                    borderTopRightRadius: '4px',
+                    borderBottomRightRadius: '20px',
+                    backgroundColor: '#0082FF',
+                    maxWidth: '70%',
+                    boxShadow: '0 2px 8px rgba(0,130,255,0.2)'
+                  }}
+                >
+                  <Text style={{ color: 'white' }}>今晚吃什么？</Text>
+                </Card>
+                {/* <Avatar icon={<UserOutlined />} style={{ marginLeft: '12px' }} /> */}
+              </div>
+              <div style={{ display: 'flex', marginBottom: '20px' }}>
+                {/* <Avatar icon={<RobotOutlined />} style={{ marginRight: '12px', backgroundColor: '#1890ff' }} /> */}
+                <Card
+                  style={{
+                    borderTopLeftRadius: '4px',
+                    borderBottomLeftRadius: '20px',
+                    borderTopRightRadius: '20px',
+                    borderBottomRightRadius: '20px',
+                    backgroundColor: 'white',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    maxWidth: '70%'
+                  }}
+                >
+                  <Text style={{ color: 'rgba(0,0,0,0.85)' }}>
+                    不好意思，我的专业知识仅限于计算机技术，无法为您提供今晚吃什么的建议。
+                  </Text>
+                </Card>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                <Card
+                  style={{
+                    borderTopLeftRadius: '20px',
+                    borderBottomLeftRadius: '20px',
+                    borderTopRightRadius: '4px',
+                    borderBottomRightRadius: '20px',
+                    backgroundColor: '#0082FF',
+                    maxWidth: '70%',
+                    boxShadow: '0 2px 8px rgba(0,130,255,0.2)'
+                  }}
+                >
+                  <Text style={{ color: 'white' }}>今晚吃什么？</Text>
+                </Card>
+                {/* <Avatar icon={<UserOutlined />} style={{ marginLeft: '12px' }} /> */}
+              </div>
+              <div style={{ display: 'flex', marginBottom: '20px' }}>
+                {/* <Avatar icon={<RobotOutlined />} style={{ marginRight: '12px', backgroundColor: '#1890ff' }} /> */}
+                <Card
+                  style={{
+                    borderTopLeftRadius: '4px',
+                    borderBottomLeftRadius: '20px',
+                    borderTopRightRadius: '20px',
+                    borderBottomRightRadius: '20px',
+                    backgroundColor: 'white',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    maxWidth: '70%'
+                  }}
+                >
+                  <Text style={{ color: 'rgba(0,0,0,0.85)' }}>
+                    不好意思，我的专业知识仅限于计算机技术，无法为您提供今晚吃什么的建议。
+                  </Text>
+                </Card>
+              </div><div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                <Card
+                  style={{
+                    borderTopLeftRadius: '20px',
+                    borderBottomLeftRadius: '20px',
+                    borderTopRightRadius: '4px',
+                    borderBottomRightRadius: '20px',
+                    backgroundColor: '#0082FF',
+                    maxWidth: '70%',
+                    boxShadow: '0 2px 8px rgba(0,130,255,0.2)'
+                  }}
+                >
+                  <Text style={{ color: 'white' }}>今晚吃什么？</Text>
+                </Card>
+                {/* <Avatar icon={<UserOutlined />} style={{ marginLeft: '12px' }} /> */}
+              </div>
+              <div style={{ display: 'flex', marginBottom: '20px' }}>
+                {/* <Avatar icon={<RobotOutlined />} style={{ marginRight: '12px', backgroundColor: '#1890ff' }} /> */}
+                <Card
+                  style={{
+                    borderTopLeftRadius: '4px',
+                    borderBottomLeftRadius: '20px',
+                    borderTopRightRadius: '20px',
+                    borderBottomRightRadius: '20px',
+                    backgroundColor: 'white',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    maxWidth: '70%'
+                  }}
+                >
+                  <Text style={{ color: 'rgba(0,0,0,0.85)' }}>
+                    不好意思，我的专业知识仅限于计算机技术，无法为您提供今晚吃什么的建议。
+                  </Text>
+                </Card>
+              </div>
+              {/* Repeat the above structure for more messages */}
+            </div>
+
+            {/* Input Area */}
+            <div style={{
+              padding: '16px',
+              position: 'absolute',
+              bottom: 0,
+              width: '100%',
+              borderTop: '1px solid #f0f0f0',
+              background: '#f9f9f9',
+              borderBottomLeftRadius: '16px',
+              borderBottomRightRadius: '16px',
+
+            }}>
+              {/* Action Buttons */}
+              <div style={{ marginBottom: '16px' }}>
+                <Space size="middle">
+                  <Button icon={<UploadOutlined />} type="primary" ghost>上传图片</Button>
+                  <Button icon={<BookOutlined />} type="primary" ghost>课程总结</Button>
+                  <Button icon={<ScheduleOutlined />} type="primary" ghost>学习计划</Button>
+                </Space>
+              </div>
+
+              <div style={{ position: 'relative' }}>
+                <Input
+                  placeholder="请输入相关问题..."
+                  suffix={
+                    <Button type="primary" shape="circle" icon={<SendOutlined />} size="small" style={{ marginRight: '-7px' }} />
+                  }
+                  style={{ borderRadius: '20px', padding: '8px 16px' }}
+                />
+              </div>
+              <Text type="secondary" style={{ fontSize: '12px', marginTop: '8px', display: 'block', textAlign: 'center' }}>
+                内容由AI模型生成，实际使用中可能存在偏差，请以实际情况为准
+              </Text>
+            </div>
+          </Card>
+        </div>
+      )}
       {/* <Sider width={300} style={{ background: '#f7f9fc' }}>
         <div style={{ padding: '20px' }}>
           <Button type="primary" style={{ marginBottom: '20px', width: '100%', backgroundColor: '#1677ff' }}>

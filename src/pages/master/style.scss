@@ -449,7 +449,7 @@ body {
     // margin: 0 auto;
     padding: 20px 0;
     width: 100%;
-    margin:0 80px
+    margin: 0 80px;
 }
 
 // .container {
@@ -458,12 +458,31 @@ body {
 //     padding: 20px;
 
 // }
+// .section-title {
+//     font-size: 31px;
+//     font-weight: bold;
+//     color: #333;
+//     margin-bottom: 16px;
+// }
 .section-title {
     font-size: 31px;
     font-weight: bold;
-    color: #333;
+    color: #fff;
     margin-bottom: 16px;
+    /* Change background-color to background */
+    background: linear-gradient(to right, #4267B2 0%, rgba(66, 103, 178, 0) 80%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
+.section-title span {
+    color: rgba(84, 84, 84, 0.6509803922) !important;
+    font-size: 16px !important;
+    text-decoration: none !important;
+    margin-left: 10px !important;
+}
+
 
 .nav-scroll {
     position: relative;
@@ -569,7 +588,7 @@ body {
 //     width: calc(100% - 1720px);
 //     // width: 430px;
 //     height: 300px;
-   
+
 //     float: left;
 //     // margin-left: 10px;
 //     background: #fff;
@@ -583,39 +602,47 @@ body {
 // }
 
 .course-container {
-    width: calc((100% - 80px) / 4); /* 适应页面宽度的动态计算，4表示一行4列，80px 为总的边距间隔 */
-    max-width: 430px; /* 设置最大宽度为 430px */
-    min-width: 300px; /* 可选：设置最小宽度，防止在小屏幕上过小 */
+    width: calc((100% - 80px) / 4);
+    /* 适应页面宽度的动态计算，4表示一行4列，80px 为总的边距间隔 */
+    max-width: 430px;
+    /* 设置最大宽度为 430px */
+    min-width: 300px;
+    /* 可选：设置最小宽度，防止在小屏幕上过小 */
     height: 300px;
     float: left;
     background: #fff;
     border-radius: 5px;
     transition: transform 0.25s;
     margin-bottom: 30px;
-    margin:0 8px;
+    margin: 0 8px;
+    margin-bottom: 40px;
     // margin-left: 10px; /* 添加左边距以间隔每列 */s
-    
+
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 /* 响应式调整，在小屏幕上调整每行项目数 */
 @media (max-width: 1200px) {
     .course-container {
-        width: calc((100% - 60px) / 3); /* 一行显示3个 */
+        width: calc((100% - 60px) / 3);
+        /* 一行显示3个 */
     }
 }
 
 @media (max-width: 900px) {
     .course-container {
-        width: calc((100% - 40px) / 2); /* 一行显示2个 */
+        width: calc((100% - 40px) / 2);
+        /* 一行显示2个 */
     }
 }
 
 @media (max-width: 600px) {
     .course-container {
-        width: calc(100% - 20px); /* 单列显示 */
+        width: calc(100% - 20px);
+        /* 单列显示 */
     }
 }
+
 .course-container:hover {
     transform: translateY(-10px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);

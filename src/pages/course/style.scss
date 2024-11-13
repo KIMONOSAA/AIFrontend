@@ -300,3 +300,18 @@ body {
     }
   }
 }
+
+//滚动条
+.chat-content::-webkit-scrollbar {
+  width: 8px;
+  background-color: #f0f0f0;
+}
+
+.chat-content::-webkit-scrollbar-thumb {
+  background-color: #d3d3d3;
+  border-radius: 4px;
+}
+
+.chat-content::-webkit-scrollbar-thumb:hover {
+  background-color: #b0b0b0;
+}

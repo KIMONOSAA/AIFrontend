@@ -129,14 +129,14 @@ const Master: React.FC = () => {
               <img
                 src={index === 0 ? './p4.jpg' : (index === 1 ? './p1.jpg' : './p2.jpg')}
                 alt={`banner ${index + 1}`}
-                style={{ width: '100%', height: '650px' }}
+                style={{ width: '100%', height: '560px' }}
               />
             </div>
           ))}
         </Carousel>
       </div>
       <div className="container">
-        <h2 className="section-title">热门好课</h2>
+        <h2 className="section-title">热门好课 <span>查看全部</span></h2>
         <div className="nav-scroll">
           <div className="nav-tabs">
             {['课程精品', '语文', '数学', '英语', '物理', '化学', '历史', '生物', '地理'].map((subject) => (

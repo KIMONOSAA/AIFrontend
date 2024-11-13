@@ -1,0 +1,135 @@
+// body {
+//     font-family: Arial, sans-serif;
+//     background-color: #f0f0f0;
+//     margin: 0;
+//     padding: 0;
+//     position: relative;
+// }
+
+// .container {
+//     background-color: white;
+//     border-radius: 10px;
+//     box-shadow: 0 0 10px rgba(0,0,0,0.1);
+//     overflow: hidden;
+//     width: 100%;
+//     max-width: 1200px;
+//     padding: 30px;
+//     position: absolute;
+//     top: 10px;
+// }
+
+.tabs {
+    display: flex;
+    // background-color: #fffffd;
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.tab.active {
+    background-color: #4169e1;
+    color: white;
+    border-radius: 5px;
+}
+
+.subscription-options {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.option {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    width: 22%;
+    cursor: pointer;
+}
+
+.option.active {
+    background-color: #fff5e6;
+    border-color: #ffd700;
+}
+
+.price {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ff4500;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 0.8em;
+}
+
+.daily-price {
+    background-color: #e6c896;
+    border-radius: 15px;
+    padding: 2px 8px;
+    font-size: 0.8em;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+.payment-section {
+    display: flex;
+    // float: left;
+    // justify-content: space-between;
+    padding: 20px;
+    width: 50%; /* 设置一个宽度，例如 80% */
+    margin: 0 auto; /* 自动左右居中 */
+    // background-color: #f1f1fb;
+}
+
+.qr-code {
+    width: 100px;
+    height: 100px;
+    background-color: #000;
+}
+
+.payment-details {
+    text-align: left;
+    margin-top: 110px;
+    // margin-left:20px;
+    width: 300px;
+}
+
+.payment-price {
+    font-size: 27px;
+    font-weight: bold;
+    color: #ff4500;
+}
+
+.payment-methods img {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+}
+
+.benefits-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.benefits-table th, .benefits-table td {
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    text-align: center;
+}
+
+.benefits-table th {
+    background-color: #f2f2f2;
+}
+
+.benefits-table .member {
+    background-color: #fff5e6;
+}
